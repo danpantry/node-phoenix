@@ -3,6 +3,7 @@ import serveStatic from "serve-static";
 import path from "path";
 import expressWs from "express-ws";
 import * as Phoenix from "./phoenix";
+import HomeView from './views/HomeView'
 
 const app = express();
 expressWs(app);
@@ -15,28 +16,10 @@ const publicPath = path.join(process.cwd(), "public");
 
 app.use("/public", serveStatic(publicPath, opts));
 
-app.get("/", (req, res) => {
+app.get("/", (_req, res) => {
   res.render("home", { name: "World" });
 });
 
-class MainView extends Phoenix.View {
-  handleEvent(event, payload) {
-    switch (event) {
-      case "login":
-        return this.login(payload);
-    }
-  }
-
-  login({ username, password }) {
-    console.log(username, password);
-    return {};
-  }
-}
-
-const viewHandlers = {
-  main: MainView
-};
-
-app.ws("/live/websocket", Phoenix.middleware(viewHandlers));
+app.ws("/live/websocket", Phoenix.middleware({ home: HomeView }));
 
 app.listen(8080);
