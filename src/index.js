@@ -2,6 +2,7 @@ import express from "express";
 import serveStatic from "serve-static";
 import path from "path";
 import expressWs from "express-ws";
+import phoenix from "./phoenix";
 
 const app = express();
 expressWs(app);
@@ -18,16 +19,6 @@ app.get("/", (req, res) => {
   res.render("home", { name: "World" });
 });
 
-function phoenixLiveSockets() {
-  return (ws, req) => {
-    const version = req.query.param;
-    if (version === "2.0.0") {
-      console.warn("version mismatch");
-      ws.close();
-    }
-  };
-}
-
-app.ws("/live/websocket", phoenixLiveSockets());
+app.ws("/live/websocket", phoenix());
 
 app.listen(8080);
