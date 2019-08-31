@@ -8,7 +8,7 @@
   "type": "module",
   "scripts": {
     "start": "node bin/index.js",
-    "build": "babel src/**/*.js --out-dir bin/",
+    "build": "babel src/ --out-dir bin/",
     "format": "prettier src/**/*.js --write"
   },
   "browserslist": [

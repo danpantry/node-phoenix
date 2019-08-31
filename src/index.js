@@ -23,20 +23,20 @@ class MainView extends Phoenix.View {
   handleEvent(event, payload) {
     switch (event) {
       case "login":
-        return this.login(payload)
+        return this.login(payload);
     }
   }
 
   login({ username, password }) {
-    console.log(username, password)
-    return {}
+    console.log(username, password);
+    return {};
   }
 }
 
 const viewHandlers = {
-  "main": MainView
-}
+  main: MainView
+};
 
-app.ws("/live/websocket", Phoenix.Middleware(viewHandlers));
+app.ws("/live/websocket", Phoenix.middleware(viewHandlers));
 
 app.listen(8080);
