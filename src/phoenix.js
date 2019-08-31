@@ -25,19 +25,18 @@ class Frame {
     ]);
   }
 
-  respond(event, payload) {
-    return new Frame(
-      this.joinRef,
-      this.ref,
-      this.topic,
-      event,
-      payload
-    )
+  /**
+   * Sends a reply to the current messaeg with the given payload. Phoenix sends a message reference (ref) with every message. Sending a frame with the same ref causes Phoenix to interpret it as a 'reply'
+   */
+  replyOk(payload = {}) {
+    return new Frame(this.joinRef, this.ref, this.topic, "phx_reply", {
+      status: "ok",
+      ...payload
+    });
   }
 
-
   isInternal() {
-    return this.topic === PHX_TOPIC
+    return this.topic === PHX_TOPIC;
   }
 }
 
@@ -59,13 +58,18 @@ class Session {
 
   joinRoom(frame) {
     this.rooms.add(frame.topic);
-    return frame.respond("phx_reply", {status: "ok", response: {}})
+    return frame.replyOk({
+      // DOM elements?
+      rendered: {},
+      // No idea
+      response: {}
+    });
   }
 
   leaveRoom(frame) {
     this.rooms.delete(frame.topic);
     // Not sure if this is correct
-    return frame.respond("phx_reply", {status: "ok", response: {}})
+    return frame.replyOk();
   }
 
   handleMessage(frame) {
@@ -93,17 +97,17 @@ export default function phoenix() {
 
     const session = new Session();
     ws.on("message", frame => {
-      console.group('received')
-      console.table(frame)
-      console.groupEnd('received')
+      console.group("received");
+      console.table(frame);
+      console.groupEnd("received");
       const decoded = Frame.decode(frame);
       const response = session.handleMessage(decoded);
       if (response !== undefined) {
         const encoded = response.encode();
         ws.send(encoded);
-        console.group('sent')
-        console.table(encoded)
-        console.groupEnd('sent')
+        console.group("sent");
+        console.table(encoded);
+        console.groupEnd("sent");
       }
     });
   };
