@@ -10,6 +10,11 @@ export default class HomeView extends Phoenix.View {
 
 	login({ username, password }) {
 		console.log(username, password);
-		return {};
+		return {
+			// DOM elements?
+			rendered: {},
+			// No idea
+			response: {}
+		};
 	}
 }
