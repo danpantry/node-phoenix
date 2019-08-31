@@ -3,6 +3,10 @@
     return;
   }
 
-  const sock = new phoenix_live_view.LiveSocket("/live");
+  const sock = new phoenix_live_view.LiveSocket("/live", {
+    logger(kind, msg, data) {
+      console.log(kind, msg, data)
+    }
+  });
   sock.connect();
 }());
