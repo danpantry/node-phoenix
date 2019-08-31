@@ -5,5 +5,19 @@
   "main": "index.js",
   "author": "Dan Pantry <devnull@danpantry.me>",
   "license": "MIT",
-  "browserslist": ["current node"]
+  "type": "module",
+  "scripts": {
+    "format": "prettier src/**/*.js --write"
+  },
+  "browserslist": [
+    "current node"
+  ],
+  "dependencies": {
+    "express": "^4.17.1",
+    "express-ws": "^4.0.0",
+    "serve-static": "^1.14.1"
+  },
+  "devDependencies": {
+    "prettier": "^1.18.2"
+  }
 }
