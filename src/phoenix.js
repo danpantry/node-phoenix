@@ -83,7 +83,7 @@ class Session {
       case "phx_leave":
         return this.leaveRoom(frame);
       default:
-        console.warn("unhandled event", event);
+        console.warn("unhandled event", frame);
         break;
     }
   }
