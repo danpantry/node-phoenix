@@ -1,0 +1,9 @@
+{
+  "name": "@danpantry/node-phoenix",
+  "version": "0.0.1",
+  "description": "demo of phoenix liveview working within node",
+  "main": "index.js",
+  "author": "Dan Pantry <devnull@danpantry.me>",
+  "license": "MIT",
+  "browserslist": ["current node"]
+}
