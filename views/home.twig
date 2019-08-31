@@ -7,8 +7,16 @@
   <title>Document</title>
 </head>
 <body>
-  <main phx-view>
-    <h1>Hello, {{name}}!</h1>
+  <main id="main" data-phx-view="main">
+    <form data-phx-submit="login">
+      <label for="username">Username</label>
+      <input type="text" name="username" id="username">
+
+      <label for="password">Password</label>
+      <input type="password" name="password" id="password">
+
+      <button type="submit">Log In</button>
+    </form>
   </main>
 
   <script src="/public/phoenix_live_view.js"></script>

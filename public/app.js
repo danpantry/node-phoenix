@@ -1,8 +1,8 @@
 (function() {
-  if ("Phoenix" in window === false) {
+  if ("phoenix_live_view" in window === false) {
     return;
   }
 
-  const sock = new Phoenix.Socket("/live");
+  const sock = new phoenix_live_view.LiveSocket("/live");
   sock.connect();
 }());

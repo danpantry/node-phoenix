@@ -16,6 +16,7 @@ class Session {
   }
 
   handleMessage(frame) {
+    console.log(frame);
     const decoded = this.decode(frame);
     const { topic, event } = decoded;
     if (topic !== PHX_TOPIC) {
