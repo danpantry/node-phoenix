@@ -82,7 +82,7 @@ function extractRoomName({ topic }) {
   return topic.replace("lv:", "");
 }
 
-export default function phoenix(viewHandlers) {
+export function Middleware(viewHandlers) {
   return (ws, req) => {
     if (req.query.vsn !== VERSION) {
       ws.close();

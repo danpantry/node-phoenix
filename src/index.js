@@ -2,7 +2,7 @@ import express from "express";
 import serveStatic from "serve-static";
 import path from "path";
 import expressWs from "express-ws";
-import phoenix, { View } from "./phoenix";
+import * as Phoenix from "./phoenix";
 
 const app = express();
 expressWs(app);
@@ -19,24 +19,24 @@ app.get("/", (req, res) => {
   res.render("home", { name: "World" });
 });
 
-class MainView extends View {
+class MainView extends Phoenix.View {
   handleEvent(event, payload) {
     switch (event) {
       case "login":
-        return this.login(payload);
+        return this.login(payload)
     }
   }
 
   login({ username, password }) {
-    console.log(username, password);
-    return {};
+    console.log(username, password)
+    return {}
   }
 }
 
 const viewHandlers = {
-  main: MainView
-};
+  "main": MainView
+}
 
-app.ws("/live/websocket", phoenix(viewHandlers));
+app.ws("/live/websocket", Phoenix.Middleware(viewHandlers));
 
 app.listen(8080);
