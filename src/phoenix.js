@@ -1,5 +1,32 @@
+import qs from "querystring";
+
 const PHX_TOPIC = "phoenix";
 const VERSION = "2.0.0";
+
+export class View {
+  on(event, payload) {
+    switch (event) {
+      case "phx_join":
+        return {
+          // DOM elements?
+          rendered: {},
+          // No idea
+          response: {}
+        };
+      case "phx_leave":
+        return {};
+
+      case "event":
+        const { event, type, value } = payload;
+        const args = type === "form" ? qs.parse(value) : value;
+        return this.handleEvent(event, args);
+    }
+  }
+
+  handleEvent(event, rest) {
+    throw new Error("You must implement handleEvent(event, rest)");
+  }
+}
 
 class Frame {
   static decode(string) {
@@ -40,75 +67,50 @@ class Frame {
   }
 }
 
-class Session {
-  constructor() {
-    this.rooms = new Set();
-  }
+function heartbeat(frame) {
+  return frame;
+}
 
-  heartbeat(frame) {
-    return frame;
-  }
-
-  handleInternalMessages(frame) {
-    switch (frame.event) {
-      case "heartbeat":
-        return this.heartbeat(frame);
-    }
-  }
-
-  joinRoom(frame) {
-    this.rooms.add(frame.topic);
-    return frame.replyOk({
-      // DOM elements?
-      rendered: {},
-      // No idea
-      response: {}
-    });
-  }
-
-  leaveRoom(frame) {
-    this.rooms.delete(frame.topic);
-    // Not sure if this is correct
-    return frame.replyOk();
-  }
-
-  handleMessage(frame) {
-    if (frame.isInternal()) {
-      return this.handleInternalMessages(frame);
-    }
-
-    switch (frame.event) {
-      case "phx_join":
-        return this.joinRoom(frame);
-      case "phx_leave":
-        return this.leaveRoom(frame);
-      default:
-        console.warn("unhandled event", frame);
-        break;
-    }
+function handleInternalMessages(frame) {
+  switch (frame.event) {
+    case "heartbeat":
+      return heartbeat(frame);
   }
 }
 
-export default function phoenix() {
+function extractRoomName({ topic }) {
+  return topic.replace("lv:", "");
+}
+
+export default function phoenix(viewHandlers) {
   return (ws, req) => {
     if (req.query.vsn !== VERSION) {
       ws.close();
     }
 
-    const session = new Session();
-    ws.on("message", frame => {
-      console.group("received");
-      console.table(frame);
-      console.groupEnd("received");
-      const decoded = Frame.decode(frame);
-      const response = session.handleMessage(decoded);
-      if (response !== undefined) {
-        const encoded = response.encode();
-        ws.send(encoded);
-        console.group("sent");
-        console.table(encoded);
-        console.groupEnd("sent");
+    ws.on("message", message => {
+      const frame = Frame.decode(message);
+      if (frame.isInternal()) {
+        return ws.send(handleInternalMessages(frame.encode()));
       }
+
+      const roomName = extractRoomName(frame);
+      const Handler = viewHandlers[roomName];
+      if (Handler === undefined) {
+        console.warn(`unknown handler ${roomName}`);
+        ws.close();
+        return;
+      }
+
+      const handler = new Handler();
+      const payload = handler.on(frame.event, frame.payload);
+      const response = frame.replyOk(payload);
+      if (response === undefined) {
+        return;
+      }
+
+      const encoded = response.encode();
+      ws.send(encoded);
     });
   };
 }
