@@ -13,10 +13,6 @@ function handleInternalMessages(frame) {
   }
 }
 
-function extractRoomName({ topic }) {
-  return topic.replace("lv:", "");
-}
-
 export default function phoenixMiddleware(viewHandlers) {
   return (ws, req) => {
     if (req.query.vsn !== VERSION) {
@@ -29,10 +25,10 @@ export default function phoenixMiddleware(viewHandlers) {
         return ws.send(handleInternalMessages(frame.encode()));
       }
 
-      const roomName = extractRoomName(frame);
-      const Handler = viewHandlers[roomName];
+      const room = frame.roomName
+      const Handler = viewHandlers[room];
       if (Handler === undefined) {
-        console.warn(`unknown handler ${roomName}`);
+        console.warn(`unknown handler ${room}`);
         ws.close();
         return;
       }

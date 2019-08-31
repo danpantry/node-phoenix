@@ -14,6 +14,10 @@ export default class Frame {
     this.payload = payload;
   }
 
+  get roomName() {
+    return this.topic.replace("lv:", "");
+  }
+
   encode() {
     return JSON.stringify([
       this.joinRef,
